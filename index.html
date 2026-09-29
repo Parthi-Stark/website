@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Parthiban S | Cyber Security Analyst</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #020617;
+            padding: 20px 10%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        header h2 {
+            color: #38bdf8;
+        }
+
+        nav a {
+            color: #cbd5e1;
+            text-decoration: none;
+            margin-left: 25px;
+        }
+
+        nav a:hover {
+            color: #38bdf8;
+        }
+
+        .hero {
+            padding: 100px 10%;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 50px;
+            color: white;
+        }
+
+        .hero span {
+            color: #38bdf8;
+        }
+
+        .hero p {
+            margin-top: 15px;
+            font-size: 20px;
+            color: #94a3b8;
+        }
+
+        .button {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 25px;
+            background: #38bdf8;
+            color: #020617;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        section {
+            padding: 70px 10%;
+        }
+
+        section h2 {
+            color: #38bdf8;
+            margin-bottom: 25px;
+            font-size: 30px;
+        }
+
+        .about {
+            background: #111827;
+        }
+
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .skill {
+            background: #1e293b;
+            padding: 12px 18px;
+            border-radius: 5px;
+            border: 1px solid #334155;
+        }
+
+        .blog-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .blog-card {
+            background: #1e293b;
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+        }
+
+        .blog-card h3 {
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .blog-card p {
+            color: #94a3b8;
+        }
+
+        .read-more {
+            display: inline-block;
+            margin-top: 15px;
+            color: #38bdf8;
+            text-decoration: none;
+        }
+
+        .contact {
+            background: #111827;
+            text-align: center;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            background: #020617;
+            color: #64748b;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            nav a {
+                margin: 0 8px;
+            }
+
+            .hero h1 {
+                font-size: 38px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header>
+        <h2>Parthiban S</h2>
+
+        <nav>
+            <a href="#about">About</a>
+            <a href="#skills">Skills</a>
+            <a href="#blog">Blog</a>
+            <a href="#contact">Contact</a>
+        </nav>
+    </header>
+
+
+    <!-- Hero Section -->
+    <section class="hero">
+
+        <h1>Hello, I'm <span>Parthiban</span></h1>
+
+        <p>
+            Technology Analyst | Cyber Security Professional
+        </p>
+
+        <p>
+            Sharing my knowledge and experience in Cyber Security,
+            WAF, Network Security and Cloud Security.
+        </p>
+
+        <a href="#blog" class="button">Read My Blog</a>
+
+    </section>
+
+
+    <!-- About -->
+    <section id="about" class="about">
+
+        <h2>About Me</h2>
+
+        <p>
+            I am Parthiban S, working as a Technology Analyst in the
+            Cyber Security domain. I have experience working with
+            enterprise security technologies and supporting security
+            infrastructure.
+        </p>
+
+        <br>
+
+        <p>
+            My areas of interest include Web Application Firewall,
+            Network Security, Cloud Security, Firewalls, Vulnerability
+            Management and DevSecOps.
+        </p>
+
+    </section>
+
+
+    <!-- Skills -->
+    <section id="skills">
+
+        <h2>Cyber Security Skills</h2>
+
+        <div class="skills">
+
+            <div class="skill">Cyber Security</div>
+            <div class="skill">Imperva WAF</div>
+            <div class="skill">F5 WAF</div>
+            <div class="skill">Palo Alto Firewall</div>
+            <div class="skill">Network Security</div>
+            <div class="skill">Azure Security</div>
+            <div class="skill">Cloud Security</div>
+            <div class="skill">DevSecOps</div>
+            <div class="skill">Incident Response</div>
+            <div class="skill">Security Monitoring</div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Blog -->
+    <section id="blog">
+
+        <h2>Latest Blog Posts</h2>
+
+        <div class="blog-container">
+
+            <div class="blog-card">
+
+                <h3>Understanding WAF</h3>
+
+                <p>
+                    Learn the basics of Web Application Firewall,
+                    how it protects web applications and common
+                    security attacks it can detect.
+                </p>
+
+                <a href="#" class="read-more">
+                    Read More →
+                </a>
+
+            </div>
+
+
+            <div class="blog-card">
+
+                <h3>Imperva WAF Basics</h3>
+
+                <p>
+                    An introduction to Imperva WAF concepts,
+                    policies, traffic inspection and common
+                    troubleshooting approaches.
+                </p>
+
+                <a href="#" class="read-more">
+                    Read More →
+                </a>
+
+            </div>
+
+
+            <div class="blog-card">
+
+                <h3>Palo Alto Firewall</h3>
+
+                <p>
+                    Understanding Palo Alto firewall policies,
+                    traffic flow, troubleshooting and important
+                    security concepts.
+                </p>
+
+                <a href="#" class="read-more">
+                    Read More →
+                </a>
+
+            </div>
+
+
+            <div class="blog-card">
+
+                <h3>Cyber Security Learning</h3>
+
+                <p>
+                    Notes and practical lessons from my journey
+                    in Cyber Security, Cloud Security and DevSecOps.
+                </p>
+
+                <a href="#" class="read-more">
+                    Read More →
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Contact -->
+    <section id="contact" class="contact">
+
+        <h2>Contact Me</h2>
+
+        <p>
+            Interested in Cyber Security or want to connect?
+        </p>
+
+        <br>
+
+        <p>
+            Email: parthastark@gmail.com
+        </p>
+
+        <p>
+            GitHub: github.com/Parthi-Stark
+        </p>
+
+        <p>
+            LinkedIn: linkedin.com/in/
+        </p>
+
+    </section>
+
+
+    <!-- Footer -->
+    <footer>
+
+        <p>
+            © 2026 Parthiban S | Cyber Security
+        </p>
+
+    </footer>
+
+</body>
+</html>
