@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Cyber Security learning notes by Parthiban S — web traffic, DNS, TCP/IP, firewalls, WAF, load balancing, applications, cloud, Kubernetes and troubleshooting.">
+<title>Cyber Security Learning My Journey | Parthiban S</title>
+
+<style>
+:root {
+    --bg: #07111f;
+    --bg2: #0b1728;
+    --card: rgba(15, 28, 46, .86);
+    --card2: #101f33;
+    --border: rgba(56, 189, 248, .18);
+    --text: #e5eef8;
+    --muted: #9fb1c5;
+    --cyan: #38bdf8;
+    --blue: #60a5fa;
+    --green: #34d399;
+    --yellow: #fbbf24;
+    --danger: #fb7185;
+    --shadow: 0 18px 50px rgba(0,0,0,.28);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+    margin: 0;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    color: var(--text);
+    background:
+        radial-gradient(circle at 15% 5%, rgba(56,189,248,.13), transparent 30%),
+        radial-gradient(circle at 85% 15%, rgba(96,165,250,.10), transparent 28%),
+        linear-gradient(180deg, #07111f 0%, #091522 45%, #07111f 100%);
+    line-height: 1.75;
+}
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image: linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: linear-gradient(to bottom, black, transparent 85%);
+}
+.progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    width: 0;
+    background: linear-gradient(90deg, var(--cyan), var(--green));
+    z-index: 1000;
+}
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(14px);
+    background: rgba(4, 12, 24, .78);
+    border-bottom: 1px solid var(--border);
+}
+.nav {
+    max-width: 1400px;
+    margin: auto;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+.brand {
+    color: var(--cyan);
+    text-decoration: none;
+    font-weight: 800;
+}
+.back {
+    color: var(--text);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    padding: 8px 14px;
+    border-radius: 999px;
+    transition: .2s;
+}
+.back:hover { border-color: var(--cyan); color: var(--cyan); }
+.hero {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 80px 24px 55px;
+}
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #b9ecff;
+    background: rgba(56,189,248,.09);
+    border: 1px solid rgba(56,189,248,.25);
+    padding: 7px 13px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .04em;
+}
+.badge::before {
+    content: "";
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 12px var(--green);
+}
+h1 {
+    margin: 18px 0 10px;
+    font-size: clamp(40px, 6vw, 76px);
+    line-height: 1.03;
+    letter-spacing: -0.045em;
+    background: linear-gradient(90deg, #fff, var(--cyan), var(--blue));
+    -webkit-background-clip: text;
+    color: transparent;
+}
+.subtitle { color: var(--muted); font-size: 18px; max-width: 800px; }
+.author { margin-top: 18px; color: #c8d7e7; }
+.author strong { color: white; }
+.layout {
+    max-width: 1400px;
+    margin: auto;
+    padding: 0 24px 80px;
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 28px;
+}
+.sidebar {
+    position: sticky;
+    top: 76px;
+    align-self: start;
+    max-height: calc(100vh - 95px);
+    overflow: auto;
+    background: rgba(8,20,35,.72);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 18px;
+    box-shadow: var(--shadow);
+}
+.sidebar h3 { margin: 0 0 12px; color: white; }
+.search {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #203650;
+    background: #081525;
+    color: white;
+    outline: none;
+    margin-bottom: 12px;
+}
+.search:focus { border-color: var(--cyan); }
+.toc { display: grid; gap: 4px; }
+.toc a {
+    color: var(--muted);
+    text-decoration: none;
+    padding: 7px 8px;
+    border-radius: 8px;
+    font-size: 13px;
+}
+.toc a:hover { background: rgba(56,189,248,.08); color: var(--cyan); }
+.toc span {
+    display: inline-block;
+    width: 28px;
+    color: var(--cyan);
+    font-weight: 800;
+}
+.main { min-width: 0; }
+.flow-card, .topic-card, .note-card {
+    background: linear-gradient(145deg, rgba(16,31,51,.92), rgba(8,20,35,.90));
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    box-shadow: var(--shadow);
+}
+.flow-card { padding: 28px; margin-bottom: 24px; }
+.flow-card h2 { margin-top: 0; }
+.flow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 9px;
+    margin-top: 20px;
+}
+.flow-step {
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: #0c1c30;
+    border: 1px solid #23415e;
+    color: #d8f5ff;
+    font-weight: 700;
+    font-size: 13px;
+}
+.flow-arrow { color: var(--cyan); font-weight: 900; }
+.topic-card {
+    display: grid;
+    grid-template-columns: 76px 1fr;
+    margin-bottom: 22px;
+    overflow: hidden;
+    scroll-margin-top: 95px;
+}
+.section-number {
+    display: flex;
+    justify-content: center;
+    padding-top: 30px;
+    color: var(--cyan);
+    font-size: 25px;
+    font-weight: 900;
+    background: rgba(56,189,248,.045);
+    border-right: 1px solid var(--border);
+}
+.topic-body { padding: 28px 32px 34px; min-width: 0; }
+.topic-body h2 {
+    margin: 0 0 18px;
+    font-size: clamp(23px, 3vw, 31px);
+    color: white;
+}
+.topic-body p { color: #c8d6e5; margin: 12px 0; }
+.mini {
+    margin: 22px 0 10px;
+    color: #dff8ff;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+}
+.diagram {
+    margin: 18px 0;
+    padding: 18px;
+    overflow-x: auto;
+    white-space: pre;
+    background: #050d18;
+    border: 1px solid #1b334c;
+    border-left: 3px solid var(--cyan);
+    border-radius: 12px;
+    color: #bdeeff;
+    font: 13px/1.7 "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+.diagram code { color: inherit; }
+.chip-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 12px 0 18px;
+}
+.chip {
+    padding: 7px 11px;
+    border-radius: 999px;
+    background: rgba(52,211,153,.07);
+    border: 1px solid rgba(52,211,153,.22);
+    color: #c9f9e8;
+    font-size: 13px;
+}
+.kv-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 10px;
+    margin: 12px 0 18px;
+}
+.kv {
+    padding: 13px;
+    border-radius: 11px;
+    background: #0a1728;
+    border: 1px solid #1c344d;
+}
+.kv span { display: block; color: var(--muted); font-size: 12px; }
+.kv b { color: #dff7ff; }
+code {
+    font-family: "SFMono-Regular", Consolas, monospace;
+    color: #bcefff;
+    background: #06111e;
+    padding: 2px 6px;
+    border-radius: 5px;
+}
+.note-card {
+    padding: 26px;
+    margin-bottom: 24px;
+}
+.note-card h2 { margin-top: 0; color: var(--green); }
+.note-card p { color: var(--muted); }
+.footer {
+    text-align: center;
+    padding: 40px 20px 70px;
+    color: #7890a8;
+}
+.top-link {
+    display: inline-block;
+    margin-top: 15px;
+    color: var(--cyan);
+    text-decoration: none;
+}
+@media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { position: relative; top: 0; max-height: none; }
+    .topic-card { grid-template-columns: 1fr; }
+    .section-number {
+        justify-content: flex-start;
+        padding: 12px 22px;
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+    }
+}
+@media (max-width: 600px) {
+    .hero { padding-top: 55px; }
+    .nav { padding: 12px 15px; }
+    .layout { padding: 0 14px 60px; }
+    .topic-body { padding: 22px 18px 26px; }
+    .flow-card { padding: 20px; }
+}
+</style>
+</head>
+
+<body>
+<div class="progress" id="progress"></div>
+
+<header class="topbar">
+    <div class="nav">
+        <a class="brand" href="index.html">PARTHIBAN S / CYBER SECURITY</a>
+        <a class="back" href="index.html">← Back to Home</a>
+    </div>
+</header>
+
+<section class="hero">
+    <div class="badge">CYBER SECURITY LEARNING NOTES</div>
+    <h1>Cyber Security Learning My Journey</h1>
+    <div class="subtitle">
+        A practical, end-to-end view of what happens when a user sends a web request —
+        from the browser and DNS through TCP/IP, firewall, WAF, load balancer,
+        web server, application, database and back again.
+    </div>
+    <div class="author"><strong>Author:</strong> Parthiban S</div>
+</section>
+
+<div class="layout">
+    <aside class="sidebar">
+        <h3>📚 Contents</h3>
+        <input class="search" id="search" type="search" placeholder="Search topics...">
+        <nav class="toc" id="toc">
+            <a href="#section-4"><span>4</span>Application/browser creates the request</a><a href="#section-5"><span>5</span>DNS happens first</a><a href="#section-6"><span>6</span>DNS records</a><a href="#section-7"><span>7</span>CDN / DDoS protection</a><a href="#section-9"><span>9</span>TCP connection</a><a href="#section-10"><span>10</span>What does TCP actually do?</a><a href="#section-11"><span>11</span>IP layer</a><a href="#section-12"><span>12</span>MAC addresses</a><a href="#section-13"><span>13</span>Firewalls</a><a href="#section-14"><span>14</span>Firewall example</a><a href="#section-15"><span>15</span>Stateful firewall</a><a href="#section-16"><span>16</span>Load Balancer</a><a href="#section-17"><span>17</span>Load-balancing algorithms</a><a href="#section-18"><span>18</span>Health checks</a><a href="#section-19"><span>19</span>Where does WAF come in?</a><a href="#section-20"><span>20</span>What does the WAF actually inspect?</a><a href="#section-21"><span>21</span>WAF security checks</a><a href="#section-22"><span>22</span>WAF does NOT replace a firewall</a><a href="#section-23"><span>23</span>TLS / SSL</a><a href="#section-24"><span>24</span>TLS termination</a><a href="#section-25"><span>25</span>Why does the WAF need TLS termination?</a><a href="#section-26"><span>26</span>HTTP request reaches the web server</a><a href="#section-27"><span>27</span>Web server vs application server</a><a href="#section-28"><span>28</span>Example architecture</a><a href="#section-29"><span>29</span>Programming language enters here</a><a href="#section-30"><span>30</span>What happens inside the application?</a><a href="#section-31"><span>31</span>Authentication</a><a href="#section-32"><span>32</span>Authorization</a><a href="#section-33"><span>33</span>Database</a><a href="#section-34"><span>34</span>Database should NOT normally be Internet-facing</a><a href="#section-35"><span>35</span>Internal networking</a><a href="#section-36"><span>36</span>Linux server</a><a href="#section-37"><span>37</span>Linux process</a><a href="#section-38"><span>38</span>Linux ports</a><a href="#section-39"><span>39</span>Reverse proxy</a><a href="#section-40"><span>40</span>Containers</a><a href="#section-41"><span>41</span>Kubernetes networking</a><a href="#section-42"><span>42</span>Microservices</a><a href="#section-43"><span>43</span>API Gateway</a><a href="#section-44"><span>44</span>The response</a><a href="#section-45"><span>45</span>WAF also inspects responses</a><a href="#section-46"><span>46</span>HTTP response headers</a><a href="#section-47"><span>47</span>Cookies</a><a href="#section-48"><span>48</span>Sessions</a><a href="#section-49"><span>49</span>Source IP becomes important to WAF</a><a href="#section-50"><span>50</span>NAT</a><a href="#section-51"><span>51</span>SNAT and DNAT</a><a href="#section-52"><span>52</span>Routing</a><a href="#section-53"><span>53</span>VLANs</a><a href="#section-54"><span>54</span>Security groups / cloud networking</a><a href="#section-55"><span>55</span>Authentication infrastructure</a><a href="#section-56"><span>56</span>Certificates and PKI</a><a href="#section-57"><span>57</span>Logging</a><a href="#section-58"><span>58</span>SIEM</a><a href="#section-59"><span>59</span>Monitoring</a><a href="#section-60"><span>60</span>What happens when something fails?</a><a href="#section-61"><span>61</span>Example troubleshooting</a><a href="#section-62"><span>62</span>403 vs 404 vs 500 vs 502 vs 503</a><a href="#section-63"><span>63</span>WAF troubleshooting example</a><a href="#section-64"><span>64</span>But what if WAF allows it?</a><a href="#section-65"><span>65</span>OSI model you should know</a><a href="#section-66"><span>66</span>TCP/IP model</a><a href="#section-67"><span>67</span>The entire journey in one example</a>
+        </nav>
+    </aside>
+
+    <main class="main">
+        <section class="flow-card">
+            <h2>🌐 Web Request — The Big Picture</h2>
+            <p style="color:var(--muted);">
+                This is the core flow covered in your notes. Think of it as the map
+                you can keep in your head while troubleshooting.
+            </p>
+            <div class="flow">
+                <span class="flow-step">Browser</span><span class="flow-arrow">→</span><span class="flow-step">↓</span><span class="flow-arrow">→</span><span class="flow-step">DNS</span><span class="flow-arrow">→</span><span class="flow-step">↓</span><span class="flow-arrow">→</span><span class="flow-step">IP address</span><span class="flow-arrow">→</span><span class="flow-step">↓</span><span class="flow-arrow">→</span><span class="flow-step">TCP connection</span><span class="flow-arrow">→</span><span class="flow-step">↓</span><span class="flow-arrow">→</span><span class="flow-step">TLS handshake</span><span class="flow-arrow">→</span><span class="flow-step">↓</span><span class="flow-arrow">→</span><span class="flow-step">HTTP request</span><span class="flow-arrow">→</span><span class="flow-step">↓</span><span class="flow-arrow">→</span><span class="flow-step">Network routing</span><span class="flow-arrow">→</span><span class="flow-step">↓</span><span class="flow-arrow">→</span><span class="flow-step">Firewall</span><span class="flow-arrow">→</span><span class="flow-step">↓</span><span class="flow-arrow">→</span><span class="flow-step">Load Balancer</span><span class="flow-arrow">→</span><span class="flow-step">↓</span><span class="flow-arrow">→</span><span class="flow-step">WAF</span><span class="flow-arrow">→</span><span class="flow-step">↓</span><span class="flow-arrow">→</span><span class="flow-step">Web Server</span><span class="flow-arrow">→</span><span class="flow-step">↓</span><span class="flow-arrow">→</span><span class="flow-step">Application</span><span class="flow-arrow">→</span><span class="flow-step">↓</span><span class="flow-arrow">→</span><span class="flow-step">Database</span><span class="flow-arrow">→</span><span class="flow-step">↓</span><span class="flow-arrow">→</span><span class="flow-step">Application</span><span class="flow-arrow">→</span><span class="flow-step">↓</span><span class="flow-arrow">→</span><span class="flow-step">Web Server</span><span class="flow-arrow">→</span><span class="flow-step">↓</span><span class="flow-arrow">→</span><span class="flow-step">WAF</span><span class="flow-arrow">→</span><span class="flow-step">↓</span><span class="flow-arrow">→</span><span class="flow-step">Load Balancer</span><span class="flow-arrow">→</span><span class="flow-step">↓</span><span class="flow-arrow">→</span><span class="flow-step">Firewall</span><span class="flow-arrow">→</span><span class="flow-step">↓</span><span class="flow-arrow">→</span><span class="flow-step">Internet</span><span class="flow-arrow">→</span><span class="flow-step">↓</span><span class="flow-arrow">→</span><span class="flow-step">Browser</span>
+            </div>
+        </section>
+
+        <section class="note-card">
+            <h2>🧠 Start With the Client</h2>
+            <p>Browser:<br><br>Laptop<br>Mobile<br>Browser<br>Mobile application<br>API client<br>Another server<br><br>For example:<br><br>Windows 11<br>    ↓<br>Chrome<br>    ↓<br>https://example.com<br><br>Operating system<br><br>Examples:<br><br>Windows<br>Linux<br>macOS<br>Android<br>iOS<br><br>The OS manages:<br><br>Network interfaces<br>TCP/IP stack<br>Processes<br>Memory<br>Files<br>Ports<br>Routing table<br>DNS configuration<br>Certificates<br>Encryption libraries</p>
+        </section>
+
+        
+    <section class="topic-card" id="section-4">
+        <div class="section-number">4</div>
+        <div class="topic-body">
+            <h2>Application/browser creates the request</h2>
+            <h3 class="mini">You enter</h3>
+<p>https://example.com/login</p>
+<h3 class="mini">The browser understands</h3>
+<div class="kv-grid"><div class="kv"><span>Protocol</span><b>HTTPS</b></div><div class="kv"><span>Hostname</span><b>example.com</b></div><div class="kv"><span>Port</span><b>443</b></div><div class="kv"><span>Path</span><b>/login</b></div></div>
+<h3 class="mini">HTTPS is essentially</h3>
+<div class="chip-grid"><span class="chip">HTTP</span><span class="chip">+</span><span class="chip">TLS encryption</span></div>
+<h3 class="mini">Normally</h3>
+<pre class="diagram"><code>HTTP → port 80
+HTTPS → port 443</code></pre>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-5">
+        <div class="section-number">5</div>
+        <div class="topic-body">
+            <h2>DNS happens first</h2>
+            <h3 class="mini">The browser needs to know</h3>
+<p>What IP address belongs to example.com?</p>
+<p>It asks DNS.</p>
+<div class="chip-grid"><span class="chip">For example:example.com</span><span class="chip">↓</span><span class="chip">203.0.113.10</span></div>
+<h3 class="mini">The actual DNS chain can involve</h3>
+<div class="chip-grid"><span class="chip">Browser DNS cache</span><span class="chip">↓</span><span class="chip">OS DNS cache</span><span class="chip">↓</span><span class="chip">Configured DNS resolver</span><span class="chip">↓</span><span class="chip">Root DNS</span><span class="chip">↓</span><span class="chip">.com DNS</span><span class="chip">↓</span><span class="chip">Authoritative DNS</span><span class="chip">↓</span><span class="chip">IP address</span></div>
+<h3 class="mini">In enterprise environments you may see</h3>
+<div class="chip-grid"><span class="chip">Client</span><span class="chip">↓</span><span class="chip">Corporate DNS</span><span class="chip">↓</span><span class="chip">DNS security</span><span class="chip">↓</span><span class="chip">Recursive resolver</span><span class="chip">↓</span><span class="chip">Authoritative DNS</span></div>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-6">
+        <div class="section-number">6</div>
+        <div class="topic-body">
+            <h2>DNS records</h2>
+            <p>You should know these well as a security engineer.</p>
+<p>A record</p>
+<p>Maps hostname to IPv4.</p>
+<pre class="diagram"><code>example.com → 203.0.113.10
+AAAA</code></pre>
+<p>IPv6.</p>
+<pre class="diagram"><code>example.com → 2001:db8::1
+CNAME</code></pre>
+<p>Alias.</p>
+<div class="chip-grid"><span class="chip">www.example.com</span><span class="chip">↓</span><span class="chip">example.company.com</span><span class="chip">MX</span></div>
+<p>Mail server.</p>
+<p>TXT</p>
+<h3 class="mini">Often used for</h3>
+<div class="chip-grid"><span class="chip">SPF</span><span class="chip">Domain verification</span><span class="chip">Security policies</span><span class="chip">NS</span></div>
+<p>Name servers.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-7">
+        <div class="section-number">7</div>
+        <div class="topic-body">
+            <h2>CDN / DDoS protection</h2>
+            <h3 class="mini">Large applications often have</h3>
+<div class="chip-grid"><span class="chip">User</span><span class="chip">↓</span><span class="chip">CDN</span><span class="chip">↓</span><span class="chip">Origin</span></div>
+<h3 class="mini">Examples include</h3>
+<div class="chip-grid"><span class="chip">Cloudflare</span><span class="chip">Akamai</span><span class="chip">AWS CloudFront</span><span class="chip">Azure Front Door</span></div>
+<h3 class="mini">The CDN can provide</h3>
+<div class="chip-grid"><span class="chip">Caching</span><span class="chip">DDoS protection</span><span class="chip">TLS termination</span><span class="chip">Bot protection</span><span class="chip">Rate limiting</span><span class="chip">Geographic distribution</span></div>
+<h3 class="mini">For example</h3>
+<div class="chip-grid"><span class="chip">User in India</span><span class="chip">↓</span><span class="chip">Indian CDN edge</span><span class="chip">↓</span><span class="chip">Origin in Singapore</span></div>
+<p>The user doesn't necessarily connect directly to the origin server. P networking starts</p>
+<h3 class="mini">Now suppose DNS returned</h3>
+<p>203.0.113.10</p>
+<p>The client needs to communicate with that IP.</p>
+<p>This involves the TCP/IP networking stack.</p>
+<h3 class="mini">You should understand</h3>
+<div class="chip-grid"><span class="chip">Application</span><span class="chip">↓</span><span class="chip">Transport</span><span class="chip">↓</span><span class="chip">Internet</span><span class="chip">↓</span><span class="chip">Network Access</span></div>
+<h3 class="mini">Or commonly</h3>
+<div class="chip-grid"><span class="chip">HTTP</span><span class="chip">TLS</span><span class="chip">TCP</span><span class="chip">IP</span><span class="chip">Ethernet/Wi-Fi</span></div>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-9">
+        <div class="section-number">9</div>
+        <div class="topic-body">
+            <h2>TCP connection</h2>
+            <h3 class="mini">For HTTPS, TCP normally uses</h3>
+<div class="kv-grid"><div class="kv"><span>Destination port</span><b>443</b></div></div>
+<h3 class="mini">TCP establishes a connection using the famous</h3>
+<pre class="diagram"><code>SYN
+   ↓
+SYN-ACK
+   ↓
+ACK</code></pre>
+<p>This is the TCP three-way handshake.</p>
+<h3 class="mini">Example</h3>
+<p>Client                         Server</p>
+<pre class="diagram"><code>SYN ------------------------&gt;</code></pre>
+<p>Now TCP connection is established.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-10">
+        <div class="section-number">10</div>
+        <div class="topic-body">
+            <h2>What does TCP actually do?</h2>
+            <h3 class="mini">TCP provides</h3>
+<div class="chip-grid"><span class="chip">Reliable delivery</span><span class="chip">Sequencing</span><span class="chip">Retransmission</span><span class="chip">Flow control</span><span class="chip">Congestion control</span></div>
+<p>Imagine the HTTP data is large.</p>
+<p>TCP breaks it into segments.</p>
+<p>HTTP data</p>
+<pre class="diagram"><code>↓
+TCP segment 1
+TCP segment 2
+TCP segment 3
+TCP segment 4</code></pre>
+<p>The receiver reassembles them.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-11">
+        <div class="section-number">11</div>
+        <div class="topic-body">
+            <h2>IP layer</h2>
+            <p>TCP sits above IP.</p>
+<h3 class="mini">IP decides</h3>
+<p>Where should this packet go?</p>
+<h3 class="mini">Example</h3>
+<h3 class="mini">Client IP</h3>
+<p>192.168.1.20</p>
+<h3 class="mini">Destination</h3>
+<p>203.0.113.10</p>
+<p>The packet travels through multiple routers.</p>
+<div class="chip-grid"><span class="chip">Laptop</span><span class="chip">↓</span><span class="chip">Home/Corporate router</span><span class="chip">↓</span><span class="chip">ISP</span><span class="chip">↓</span><span class="chip">Internet routers</span><span class="chip">↓</span><span class="chip">Cloud/provider network</span><span class="chip">↓</span><span class="chip">Data center</span></div>
+<p>Routers examine the destination IP and forward packets.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-12">
+        <div class="section-number">12</div>
+        <div class="topic-body">
+            <h2>MAC addresses</h2>
+            <h3 class="mini">At the local network level you also have</h3>
+<p>IP address MAC address</p>
+<h3 class="mini">For example</h3>
+<p>IP: 192.168.1.20 MAC: AA:BB:CC:DD:EE:FF</p>
+<h3 class="mini">ARP can resolve</h3>
+<pre class="diagram"><code>IP → MAC</code></pre>
+<p>within an IPv4 local network.</p>
+<p>You don't normally have the client's MAC address travelling across the Internet.</p>
+<p>That's an important distinction.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-13">
+        <div class="section-number">13</div>
+        <div class="topic-body">
+            <h2>Firewalls</h2>
+            <p>Now the request reaches your enterprise infrastructure.</p>
+<p>One of the first security controls could be a firewall.</p>
+<h3 class="mini">For example</h3>
+<div class="chip-grid"><span class="chip">Internet</span><span class="chip">↓</span><span class="chip">Firewall</span></div>
+<h3 class="mini">Examples</h3>
+<div class="chip-grid"><span class="chip">Palo Alto</span><span class="chip">FortiGate</span><span class="chip">Check Point</span><span class="chip">Cisco</span><span class="chip">Azure Firewall</span><span class="chip">AWS Network Firewall</span></div>
+<h3 class="mini">A firewall can inspect</h3>
+<div class="chip-grid"><span class="chip">Source IP</span><span class="chip">Destination IP</span><span class="chip">Source port</span><span class="chip">Destination port</span><span class="chip">Protocol</span><span class="chip">Application</span><span class="chip">User</span><span class="chip">URL</span><span class="chip">Threat intelligence</span></div>
+<p>depending on its capabilities.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-14">
+        <div class="section-number">14</div>
+        <div class="topic-body">
+            <h2>Firewall example</h2>
+            <h3 class="mini">Suppose</h3>
+<h3 class="mini">Source</h3>
+<p>1.2.3.4</p>
+<h3 class="mini">Destination</h3>
+<p>203.0.113.10</p>
+<h3 class="mini">Protocol</h3>
+<p>TCP</p>
+<h3 class="mini">Destination port</h3>
+<p>443</p>
+<h3 class="mini">Firewall rule</h3>
+<pre class="diagram"><code>Internet → Web VIP
+TCP/443
+ALLOW</code></pre>
+<p>Everything else might be denied.</p>
+<h3 class="mini">For example</h3>
+<pre class="diagram"><code>Internet → Web VIP
+TCP/22
+DENY</code></pre>
+<p>That's basic segmentation.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-15">
+        <div class="section-number">15</div>
+        <div class="topic-body">
+            <h2>Stateful firewall</h2>
+            <p>A stateful firewall remembers connections.</p>
+<h3 class="mini">For example</h3>
+<pre class="diagram"><code>Client → Server
+TCP 443</code></pre>
+<p>After allowing the connection, it knows that the return traffic belongs to the same session.</p>
+<h3 class="mini">Conceptually</h3>
+<pre class="diagram"><code>Client:54321 → Server:443</code></pre>
+<h3 class="mini">Response</h3>
+<pre class="diagram"><code>Server:443 → Client:54321</code></pre>
+<p>The firewall understands this connection state.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-16">
+        <div class="section-number">16</div>
+        <div class="topic-body">
+            <h2>Load Balancer</h2>
+            <h3 class="mini">Suppose your application has</h3>
+<div class="chip-grid"><span class="chip">Web Server 1</span><span class="chip">Web Server 2</span><span class="chip">Web Server 3</span></div>
+<p>You don't want users to connect directly to individual servers.</p>
+<h3 class="mini">Instead</h3>
+<div class="chip-grid"><span class="chip">Load Balancer</span><span class="chip">│</span><span class="chip">┌─────────┼─────────┐</span><span class="chip">↓         ↓         ↓</span><span class="chip">Web01     Web02     Web03</span></div>
+<p>The user connects to a VIP.</p>
+<h3 class="mini">Example</h3>
+<div class="chip-grid"><span class="chip">www.example.com</span><span class="chip">↓</span><span class="chip">203.0.113.10</span><span class="chip">↓</span><span class="chip">Load Balancer VIP</span></div>
+<p>The load balancer chooses a backend.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-17">
+        <div class="section-number">17</div>
+        <div class="topic-body">
+            <h2>Load-balancing algorithms</h2>
+            <h3 class="mini">Common algorithms</h3>
+<div class="chip-grid"><span class="chip">Round Robin</span><span class="chip">Request 1 → Server 1</span><span class="chip">Request 2 → Server 2</span><span class="chip">Request 3 → Server 3</span><span class="chip">Request 4 → Server 1</span><span class="chip">Least Connections</span></div>
+<p>Send the request to the server with fewer active connections.</p>
+<div class="chip-grid"><span class="chip">Weighted</span><span class="chip">Server 1 → 50%</span><span class="chip">Server 2 → 30%</span><span class="chip">Server 3 → 20%</span></div>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-18">
+        <div class="section-number">18</div>
+        <div class="topic-body">
+            <h2>Health checks</h2>
+            <p>The load balancer continuously checks backend servers.</p>
+<h3 class="mini">For example</h3>
+<p>GET /health</p>
+<h3 class="mini">Expected</h3>
+<pre class="diagram"><code>HTTP/1.1 200 OK</code></pre>
+<h3 class="mini">If</h3>
+<pre class="diagram"><code>Server 2 → 500</code></pre>
+<p>the load balancer can mark it down.</p>
+<h3 class="mini">Then</h3>
+<pre class="diagram"><code>Request → Server 1
+Request → Server 3</code></pre>
+<p>instead.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-19">
+        <div class="section-number">19</div>
+        <div class="topic-body">
+            <h2>Where does WAF come in?</h2>
+            <p>This is especially important for your job.</p>
+<p>There are several architectures.</p>
+<div class="chip-grid"><span class="chip">Architecture A</span><span class="chip">Internet</span><span class="chip">↓</span><span class="chip">Firewall</span><span class="chip">↓</span><span class="chip">WAF</span><span class="chip">↓</span><span class="chip">Load Balancer</span><span class="chip">↓</span><span class="chip">Web Server</span><span class="chip">Architecture B</span><span class="chip">Internet</span><span class="chip">↓</span><span class="chip">Firewall</span><span class="chip">↓</span><span class="chip">Load Balancer</span><span class="chip">↓</span><span class="chip">WAF</span><span class="chip">↓</span><span class="chip">Web Server</span><span class="chip">Architecture C</span></div>
+<p>WAF functionality may be integrated into an ADC/load balancer.</p>
+<h3 class="mini">For example</h3>
+<div class="chip-grid"><span class="chip">Internet</span><span class="chip">↓</span><span class="chip">F5</span><span class="chip">├── Load Balancing</span><span class="chip">└── ASM/Advanced WAF</span><span class="chip">↓</span><span class="chip">Web Servers</span></div>
+<p>The exact placement depends on the architecture.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-20">
+        <div class="section-number">20</div>
+        <div class="topic-body">
+            <h2>What does the WAF actually inspect?</h2>
+            <h3 class="mini">Suppose the browser sends</h3>
+<pre class="diagram"><code>GET /products?id=123 HTTP/1.1
+Host: example.com
+Cookie: session=abc123
+User-Agent: Chrome</code></pre>
+<h3 class="mini">The WAF can inspect</h3>
+<div class="chip-grid"><span class="chip">Request method</span><span class="chip">GET</span><span class="chip">POST</span><span class="chip">PUT</span><span class="chip">DELETE</span><span class="chip">PATCH</span><span class="chip">URL</span><span class="chip">/products?id=123</span><span class="chip">Headers</span><span class="chip">Host</span><span class="chip">Cookie</span><span class="chip">User-Agent</span><span class="chip">Content-Type</span><span class="chip">Authorization</span><span class="chip">Query parameters</span><span class="chip">?id=123</span><span class="chip">POST body</span></div>
+<h3 class="mini">For example</h3>
+<div class="chip-grid"><span class="chip">{</span><span class="chip">"username": "parthiban",</span><span class="chip">"password": "xxxxx"</span><span class="chip">}</span></div>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-21">
+        <div class="section-number">21</div>
+        <div class="topic-body">
+            <h2>WAF security checks</h2>
+            <h3 class="mini">Typical WAF protections include</h3>
+<div class="chip-grid"><span class="chip">SQL Injection</span><span class="chip">' OR 1=1 --</span><span class="chip">XSS</span><span class="chip">alert(1)</span><span class="chip">Path traversal</span><span class="chip">../../etc/passwd</span><span class="chip">Command injection</span><span class="chip">; cat /etc/passwd</span><span class="chip">Protocol violations</span></div>
+<p>Malformed HTTP requests.</p>
+<p>HTTP method restrictions</p>
+<h3 class="mini">Example</h3>
+<pre class="diagram"><code>GET → allowed
+POST → allowed
+DELETE → blocked
+Rate limiting</code></pre>
+<h3 class="mini">For example</h3>
+<p>1000 requests/minute/IP Bot protection</p>
+<p>Detecting automated traffic.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-22">
+        <div class="section-number">22</div>
+        <div class="topic-body">
+            <h2>WAF does NOT replace a firewall</h2>
+            <p>This is a very important concept.</p>
+<p>A network firewall primarily controls network traffic.</p>
+<h3 class="mini">For example</h3>
+<div class="chip-grid"><span class="chip">IP</span><span class="chip">Port</span><span class="chip">Protocol</span><span class="chip">Network</span><span class="chip">Zone</span></div>
+<p>A WAF primarily protects web applications.</p>
+<h3 class="mini">For example</h3>
+<div class="chip-grid"><span class="chip">HTTP</span><span class="chip">URL</span><span class="chip">Parameters</span><span class="chip">Headers</span><span class="chip">Cookies</span><span class="chip">Request body</span><span class="chip">Application attacks</span></div>
+<h3 class="mini">So</h3>
+<h3 class="mini">Firewall</h3>
+<p>"Can this network connection reach the service?"</p>
+<h3 class="mini">WAF</h3>
+<p>"Is this HTTP request acceptable for this application?"</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-23">
+        <div class="section-number">23</div>
+        <div class="topic-body">
+            <h2>TLS / SSL</h2>
+            <p>Before the HTTP data can be securely exchanged, TLS is involved.</p>
+<h3 class="mini">Modern HTTPS generally uses</h3>
+<p>TLS 1.2 TLS 1.3</p>
+<h3 class="mini">The TLS handshake establishes</h3>
+<div class="chip-grid"><span class="chip">Server authentication</span><span class="chip">Encryption keys</span><span class="chip">Secure communication</span></div>
+<p>The server presents a certificate.</p>
+<h3 class="mini">Example</h3>
+<h3 class="mini">Certificate</h3>
+<div class="kv-grid"><div class="kv"><span>CN</span><b>example.com</b></div><div class="kv"><span>Issuer</span><b>Trusted CA</b></div></div>
+<p>The browser verifies the certificate chain.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-24">
+        <div class="section-number">24</div>
+        <div class="topic-body">
+            <h2>TLS termination</h2>
+            <h3 class="mini">In many enterprise architectures</h3>
+<div class="chip-grid"><span class="chip">Client</span><span class="chip">│</span><span class="chip">HTTPS</span><span class="chip">↓</span><span class="chip">WAF / Load Balancer</span><span class="chip">│</span><span class="chip">HTTP or HTTPS</span><span class="chip">↓</span><span class="chip">Backend</span></div>
+<p>TLS terminates at the WAF/LB.</p>
+<h3 class="mini">Alternatively</h3>
+<div class="chip-grid"><span class="chip">Client</span><span class="chip">↓ HTTPS</span><span class="chip">WAF</span><span class="chip">↓ HTTPS</span><span class="chip">Load Balancer</span><span class="chip">↓ HTTPS</span><span class="chip">Web Server</span></div>
+<p>This is called TLS re-encryption / SSL bridging depending on architecture.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-25">
+        <div class="section-number">25</div>
+        <div class="topic-body">
+            <h2>Why does the WAF need TLS termination?</h2>
+            <h3 class="mini">Because encrypted traffic looks like</h3>
+<p>Random encrypted bytes</p>
+<h3 class="mini">The WAF cannot inspect</h3>
+<div class="chip-grid"><span class="chip">SQL injection</span><span class="chip">XSS</span><span class="chip">URL</span><span class="chip">POST body</span></div>
+<p>unless it can decrypt the traffic.</p>
+<h3 class="mini">So</h3>
+<div class="chip-grid"><span class="chip">HTTPS</span><span class="chip">↓</span><span class="chip">TLS termination</span><span class="chip">↓</span><span class="chip">HTTP inspection</span><span class="chip">↓</span><span class="chip">WAF rules</span></div>
+<p>This is a major WAF concept.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-26">
+        <div class="section-number">26</div>
+        <div class="topic-body">
+            <h2>HTTP request reaches the web server</h2>
+            <h3 class="mini">Assume the WAF allows</h3>
+<p>GET /login</p>
+<h3 class="mini">The request reaches</h3>
+<p>NGINX</p>
+<h3 class="mini">or</h3>
+<p>Apache</p>
+<h3 class="mini">or</h3>
+<p>IIS</p>
+<p>The web server receives the HTTP request.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-27">
+        <div class="section-number">27</div>
+        <div class="topic-body">
+            <h2>Web server vs application server</h2>
+            <p>This distinction is extremely important.</p>
+<p>Web server</p>
+<h3 class="mini">Examples</h3>
+<div class="chip-grid"><span class="chip">NGINX</span><span class="chip">Apache</span><span class="chip">IIS</span></div>
+<h3 class="mini">Common responsibilities</h3>
+<div class="chip-grid"><span class="chip">Receive HTTP</span><span class="chip">TLS termination</span><span class="chip">Serve static files</span><span class="chip">Reverse proxy</span><span class="chip">Compression</span><span class="chip">Headers</span><span class="chip">Routing</span><span class="chip">Access logs</span><span class="chip">Application server</span></div>
+<h3 class="mini">Examples</h3>
+<div class="chip-grid"><span class="chip">Tomcat</span><span class="chip">.NET</span><span class="chip">Node.js</span><span class="chip">Gunicorn</span><span class="chip">uWSGI</span></div>
+<p>The application server executes application code.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-28">
+        <div class="section-number">28</div>
+        <div class="topic-body">
+            <h2>Example architecture</h2>
+            <p>Suppose you have a Java application.</p>
+<div class="chip-grid"><span class="chip">Internet</span><span class="chip">↓</span><span class="chip">Firewall</span><span class="chip">↓</span><span class="chip">WAF</span><span class="chip">↓</span><span class="chip">Load Balancer</span><span class="chip">↓</span><span class="chip">NGINX</span><span class="chip">↓</span><span class="chip">Tomcat</span><span class="chip">↓</span><span class="chip">Java Application</span><span class="chip">↓</span><span class="chip">Oracle DB</span></div>
+<h3 class="mini">The request might travel</h3>
+<div class="chip-grid"><span class="chip">GET /login</span><span class="chip">↓</span><span class="chip">NGINX</span><span class="chip">↓</span><span class="chip">Tomcat</span><span class="chip">↓</span><span class="chip">Java code</span><span class="chip">↓</span><span class="chip">Oracle</span></div>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-29">
+        <div class="section-number">29</div>
+        <div class="topic-body">
+            <h2>Programming language enters here</h2>
+            <h3 class="mini">Your application could be written in</h3>
+<div class="chip-grid"><span class="chip">Java</span><span class="chip">Java + Spring Boot</span><span class="chip">C#</span><span class="chip">ASP.NET Core</span><span class="chip">JavaScript</span><span class="chip">Node.js</span><span class="chip">Python</span><span class="chip">Django</span><span class="chip">Flask</span><span class="chip">FastAPI</span><span class="chip">PHP</span><span class="chip">Laravel</span><span class="chip">WordPress</span></div>
+<p>The WAF generally doesn't care what language is used.</p>
+<p>It protects the HTTP interface exposed by that application.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-30">
+        <div class="section-number">30</div>
+        <div class="topic-body">
+            <h2>What happens inside the application?</h2>
+            <h3 class="mini">Suppose you request</h3>
+<p>GET /user/123</p>
+<h3 class="mini">The application might execute</h3>
+<div class="chip-grid"><span class="chip">HTTP Request</span><span class="chip">↓</span><span class="chip">Router</span><span class="chip">↓</span><span class="chip">Controller</span><span class="chip">↓</span><span class="chip">Authentication</span><span class="chip">↓</span><span class="chip">Authorization</span><span class="chip">↓</span><span class="chip">Business Logic</span><span class="chip">↓</span><span class="chip">Database Query</span></div>
+<h3 class="mini">For example</h3>
+<p>GET /user/123</p>
+<h3 class="mini">might invoke</h3>
+<div class="chip-grid"><span class="chip">UserController</span><span class="chip">↓</span><span class="chip">UserService</span><span class="chip">↓</span><span class="chip">UserRepository</span><span class="chip">↓</span><span class="chip">Database</span></div>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-31">
+        <div class="section-number">31</div>
+        <div class="topic-body">
+            <h2>Authentication</h2>
+            <h3 class="mini">The application may determine</h3>
+<p>Who is this user?</p>
+<h3 class="mini">Examples</h3>
+<div class="chip-grid"><span class="chip">Username/password</span><span class="chip">OAuth</span><span class="chip">OIDC</span><span class="chip">SAML</span><span class="chip">JWT</span><span class="chip">Session cookie</span><span class="chip">MFA</span></div>
+<h3 class="mini">For example</h3>
+<p>Authorization: Bearer eyJhbGci...</p>
+<p>The application validates the token.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-32">
+        <div class="section-number">32</div>
+        <div class="topic-body">
+            <h2>Authorization</h2>
+            <h3 class="mini">Authentication answers</h3>
+<p>Who are you?</p>
+<h3 class="mini">Authorization answers</h3>
+<p>What are you allowed to do?</p>
+<h3 class="mini">Example</h3>
+<pre class="diagram"><code>User → Read profile
+Admin → Read + modify users</code></pre>
+<p>This is application-level security.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-33">
+        <div class="section-number">33</div>
+        <div class="topic-body">
+            <h2>Database</h2>
+            <h3 class="mini">The application may need information from</h3>
+<div class="chip-grid"><span class="chip">MySQL</span><span class="chip">PostgreSQL</span><span class="chip">Oracle</span><span class="chip">SQL Server</span><span class="chip">MongoDB</span><span class="chip">Redis</span></div>
+<h3 class="mini">Example</h3>
+<div class="chip-grid"><span class="chip">Application</span><span class="chip">↓</span><span class="chip">SELECT username,email</span><span class="chip">FROM users</span><span class="chip">WHERE id=123</span><span class="chip">↓</span><span class="chip">Database</span></div>
+<h3 class="mini">The database returns</h3>
+<div class="kv-grid"><div class="kv"><span>username</span><b>Parthiban</b></div><div class="kv"><span>email</span><b>...</b></div></div>
+<p>The application processes it.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-34">
+        <div class="section-number">34</div>
+        <div class="topic-body">
+            <h2>Database should NOT normally be Internet-facing</h2>
+            <h3 class="mini">Good architecture</h3>
+<div class="chip-grid"><span class="chip">Internet</span><span class="chip">↓</span><span class="chip">WAF</span><span class="chip">↓</span><span class="chip">Web/App</span><span class="chip">↓</span><span class="chip">Database</span></div>
+<h3 class="mini">Bad architecture</h3>
+<div class="chip-grid"><span class="chip">Internet</span><span class="chip">↓</span><span class="chip">Database</span></div>
+<h3 class="mini">Database networks are usually protected by</h3>
+<div class="chip-grid"><span class="chip">Firewall</span><span class="chip">Security groups</span><span class="chip">Network ACLs</span><span class="chip">Private subnets</span><span class="chip">Authentication</span><span class="chip">Encryption</span><span class="chip">Least privilege</span></div>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-35">
+        <div class="section-number">35</div>
+        <div class="topic-body">
+            <h2>Internal networking</h2>
+            <h3 class="mini">Inside a data center/cloud, you might have</h3>
+<div class="chip-grid"><span class="chip">DMZ</span><span class="chip">↓</span><span class="chip">Web subnet</span><span class="chip">↓</span><span class="chip">Application subnet</span><span class="chip">↓</span><span class="chip">Database subnet</span></div>
+<h3 class="mini">Example</h3>
+<div class="chip-grid"><span class="chip">Internet</span><span class="chip">↓</span><span class="chip">DMZ</span><span class="chip">↓</span><span class="chip">Web Tier</span><span class="chip">↓</span><span class="chip">App Tier</span><span class="chip">↓</span><span class="chip">DB Tier</span></div>
+<p>This is network segmentation.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-36">
+        <div class="section-number">36</div>
+        <div class="topic-body">
+            <h2>Linux server</h2>
+            <p>A huge percentage of web infrastructure runs Linux.</p>
+<h3 class="mini">You should understand</h3>
+<div class="chip-grid"><span class="chip">Linux</span><span class="chip">├── Kernel</span><span class="chip">├── Processes</span><span class="chip">├── Memory</span><span class="chip">├── Filesystem</span><span class="chip">├── Network stack</span><span class="chip">├── Users/groups</span><span class="chip">├── Services</span><span class="chip">└── Security</span></div>
+<h3 class="mini">For example</h3>
+<div class="chip-grid"><span class="chip">Ubuntu</span><span class="chip">RHEL</span><span class="chip">Rocky Linux</span><span class="chip">Amazon Linux</span><span class="chip">Debian</span></div>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-37">
+        <div class="section-number">37</div>
+        <div class="topic-body">
+            <h2>Linux process</h2>
+            <p>Suppose NGINX is running.</p>
+<h3 class="mini">You might see</h3>
+<p>nginx</p>
+<p>as a process.</p>
+<h3 class="mini">Application</h3>
+<p>java</p>
+<h3 class="mini">Database</h3>
+<p>mysqld</p>
+<p>Each application is a process.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-38">
+        <div class="section-number">38</div>
+        <div class="topic-body">
+            <h2>Linux ports</h2>
+            <h3 class="mini">Example</h3>
+<pre class="diagram"><code>NGINX → 443
+Tomcat → 8080
+SSH → 22
+MySQL → 3306</code></pre>
+<h3 class="mini">You might have</h3>
+<div class="chip-grid"><span class="chip">WAF</span><span class="chip">↓</span><span class="chip">TCP/443</span><span class="chip">↓</span><span class="chip">NGINX</span><span class="chip">↓</span><span class="chip">TCP/8080</span><span class="chip">↓</span><span class="chip">Tomcat</span></div>
+<p>The application doesn't necessarily listen directly on 443.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-39">
+        <div class="section-number">39</div>
+        <div class="topic-body">
+            <h2>Reverse proxy</h2>
+            <h3 class="mini">NGINX might act as a reverse proxy</h3>
+<div class="chip-grid"><span class="chip">Client</span><span class="chip">↓</span><span class="chip">NGINX :443</span><span class="chip">↓</span><span class="chip">Tomcat :8080</span></div>
+<h3 class="mini">NGINX receives</h3>
+<p>https://example.com</p>
+<h3 class="mini">and forwards internally</h3>
+<p>http://10.10.20.15:8080</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-40">
+        <div class="section-number">40</div>
+        <div class="topic-body">
+            <h2>Containers</h2>
+            <p>Modern applications often don't run directly on a physical/VM server.</p>
+<h3 class="mini">You might have</h3>
+<div class="chip-grid"><span class="chip">Server</span><span class="chip">↓</span><span class="chip">Docker</span><span class="chip">↓</span><span class="chip">Container</span><span class="chip">↓</span><span class="chip">Application</span></div>
+<h3 class="mini">For example</h3>
+<div class="chip-grid"><span class="chip">Kubernetes</span><span class="chip">├── Pod</span><span class="chip">│    └── Java application</span><span class="chip">├── Pod</span><span class="chip">│    └── Java application</span><span class="chip">└── Pod</span><span class="chip">└── Java application</span></div>
+<h3 class="mini">The request might therefore go</h3>
+<div class="chip-grid"><span class="chip">Internet</span><span class="chip">↓</span><span class="chip">WAF</span><span class="chip">↓</span><span class="chip">Load Balancer</span><span class="chip">↓</span><span class="chip">Kubernetes Ingress</span><span class="chip">↓</span><span class="chip">Service</span><span class="chip">↓</span><span class="chip">Pod</span><span class="chip">↓</span><span class="chip">Application</span></div>
+<p>This is increasingly important for WAF engineers.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-41">
+        <div class="section-number">41</div>
+        <div class="topic-body">
+            <h2>Kubernetes networking</h2>
+            <h3 class="mini">A simplified architecture</h3>
+<div class="chip-grid"><span class="chip">Internet</span><span class="chip">↓</span><span class="chip">WAF</span><span class="chip">↓</span><span class="chip">Load Balancer</span><span class="chip">↓</span><span class="chip">Ingress</span><span class="chip">↓</span><span class="chip">Service</span><span class="chip">↓</span><span class="chip">┌─────┴─────┐</span><span class="chip">↓           ↓</span><span class="chip">Pod 1       Pod 2</span></div>
+<p>The service distributes traffic to pods.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-42">
+        <div class="section-number">42</div>
+        <div class="topic-body">
+            <h2>Microservices</h2>
+            <p>Modern applications may not be one application.</p>
+<h3 class="mini">Instead</h3>
+<div class="chip-grid"><span class="chip">Frontend</span><span class="chip">↓</span><span class="chip">API Gateway</span><span class="chip">↓</span><span class="chip">┌───────────┬────────────┬────────────┐</span><span class="chip">↓           ↓            ↓            ↓</span><span class="chip">User       Payment      Order       Product</span><span class="chip">Service    Service      Service      Service</span><span class="chip">↓           ↓            ↓</span><span class="chip">DB          DB           DB</span></div>
+<p>Your original request may therefore trigger dozens of internal requests.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-43">
+        <div class="section-number">43</div>
+        <div class="topic-body">
+            <h2>API Gateway</h2>
+            <h3 class="mini">An API gateway can provide</h3>
+<div class="chip-grid"><span class="chip">Authentication</span><span class="chip">Routing</span><span class="chip">Rate limiting</span><span class="chip">API management</span><span class="chip">Logging</span><span class="chip">Transformation</span><span class="chip">Authorization</span></div>
+<h3 class="mini">Architecture</h3>
+<div class="chip-grid"><span class="chip">Internet</span><span class="chip">↓</span><span class="chip">WAF</span><span class="chip">↓</span><span class="chip">API Gateway</span><span class="chip">↓</span><span class="chip">Microservices</span></div>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-44">
+        <div class="section-number">44</div>
+        <div class="topic-body">
+            <h2>The response</h2>
+            <h3 class="mini">Suppose the application generates</h3>
+<pre class="diagram"><code>HTTP/1.1 200 OK
+Content-Type: application/json</code></pre>
+<div class="chip-grid"><span class="chip">{</span><span class="chip">"username": "Parthiban"</span><span class="chip">}</span></div>
+<h3 class="mini">The response travels backward</h3>
+<div class="chip-grid"><span class="chip">Application</span><span class="chip">↓</span><span class="chip">Web Server</span><span class="chip">↓</span><span class="chip">WAF</span><span class="chip">↓</span><span class="chip">Load Balancer</span><span class="chip">↓</span><span class="chip">Firewall</span><span class="chip">↓</span><span class="chip">Internet</span><span class="chip">↓</span><span class="chip">Client</span></div>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-45">
+        <div class="section-number">45</div>
+        <div class="topic-body">
+            <h2>WAF also inspects responses</h2>
+            <p>Depending on configuration/product, WAF/security controls can inspect response traffic too.</p>
+<h3 class="mini">For example</h3>
+<div class="chip-grid"><span class="chip">Request inspection</span><span class="chip">↓</span><span class="chip">Application</span><span class="chip">↓</span><span class="chip">Response inspection</span></div>
+<h3 class="mini">Response controls can involve</h3>
+<div class="chip-grid"><span class="chip">Data leakage detection</span><span class="chip">Sensitive information protection</span><span class="chip">Response headers</span><span class="chip">Cookie security</span><span class="chip">Information disclosure</span></div>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-46">
+        <div class="section-number">46</div>
+        <div class="topic-body">
+            <h2>HTTP response headers</h2>
+            <p>You should become very comfortable with these.</p>
+<h3 class="mini">For example</h3>
+<pre class="diagram"><code>HTTP/1.1 200 OK
+Content-Type: text/html
+Content-Length: 4521
+Set-Cookie: session=abc
+Strict-Transport-Security: max-age=31536000
+Content-Security-Policy: ...
+X-Content-Type-Options: nosniff</code></pre>
+<p>Security headers are an important part of web security.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-47">
+        <div class="section-number">47</div>
+        <div class="topic-body">
+            <h2>Cookies</h2>
+            <h3 class="mini">The server might return</h3>
+<div class="kv-grid"><div class="kv"><span>Set-Cookie: session</span><b>ABC123</b></div></div>
+<p>The browser stores it.</p>
+<h3 class="mini">Then subsequent requests contain</h3>
+<div class="kv-grid"><div class="kv"><span>Cookie: session</span><b>ABC123</b></div></div>
+<h3 class="mini">Cookie security attributes include</h3>
+<div class="chip-grid"><span class="chip">Secure</span><span class="chip">HttpOnly</span><span class="chip">SameSite</span><span class="chip">Domain</span><span class="chip">Path</span><span class="chip">Expires/Max-Age</span></div>
+<h3 class="mini">For example</h3>
+<p>Secure</p>
+<p>means the cookie should be sent over HTTPS.</p>
+<p>HttpOnly</p>
+<p>prevents normal JavaScript access to the cookie.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-48">
+        <div class="section-number">48</div>
+        <div class="topic-body">
+            <h2>Sessions</h2>
+            <h3 class="mini">A common architecture</h3>
+<div class="chip-grid"><span class="chip">Browser</span><span class="chip">↓</span><span class="chip">Session Cookie</span><span class="chip">↓</span><span class="chip">WAF/LB</span><span class="chip">↓</span><span class="chip">Application</span><span class="chip">↓</span><span class="chip">Session store</span></div>
+<h3 class="mini">Session storage might use</h3>
+<div class="chip-grid"><span class="chip">Redis</span><span class="chip">Database</span><span class="chip">Application memory</span></div>
+<p>If multiple application servers exist, centralized session storage or other session strategies may be needed.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-49">
+        <div class="section-number">49</div>
+        <div class="topic-body">
+            <h2>Source IP becomes important to WAF</h2>
+            <h3 class="mini">Suppose</h3>
+<div class="chip-grid"><span class="chip">Client</span><span class="chip">↓</span><span class="chip">CDN</span><span class="chip">↓</span><span class="chip">WAF</span><span class="chip">↓</span><span class="chip">LB</span><span class="chip">↓</span><span class="chip">Server</span></div>
+<h3 class="mini">The backend server may see</h3>
+<p>WAF IP</p>
+<p>instead of the actual client IP.</p>
+<h3 class="mini">The original IP may be forwarded in headers such as</h3>
+<p>X-Forwarded-For</p>
+<p>or a provider-specific header.</p>
+<h3 class="mini">This is extremely important for</h3>
+<div class="chip-grid"><span class="chip">WAF policies</span><span class="chip">Rate limiting</span><span class="chip">Logging</span><span class="chip">IP blocking</span><span class="chip">Incident response</span></div>
+<p>But blindly trusting client-supplied forwarding headers can create security problems.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-50">
+        <div class="section-number">50</div>
+        <div class="topic-body">
+            <h2>NAT</h2>
+            <p>Another concept you need to understand.</p>
+<h3 class="mini">Suppose internal server</h3>
+<p>10.10.10.20</p>
+<p>is behind NAT.</p>
+<h3 class="mini">External traffic may see</h3>
+<p>203.0.113.20</p>
+<p>NAT translates addresses.</p>
+<div class="chip-grid"><span class="chip">Private IP</span><span class="chip">10.10.10.20</span><span class="chip">↓</span><span class="chip">NAT</span><span class="chip">↓</span><span class="chip">Public IP</span><span class="chip">203.0.113.20</span></div>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-51">
+        <div class="section-number">51</div>
+        <div class="topic-body">
+            <h2>SNAT and DNAT</h2>
+            <p>SNAT</p>
+<p>Source NAT.</p>
+<div class="chip-grid"><span class="chip">10.10.10.20</span><span class="chip">↓</span><span class="chip">203.0.113.20</span><span class="chip">DNAT</span></div>
+<p>Destination NAT.</p>
+<h3 class="mini">For example</h3>
+<div class="chip-grid"><span class="chip">Public VIP</span><span class="chip">203.0.113.10:443</span><span class="chip">↓</span><span class="chip">10.10.20.10:443</span></div>
+<p>Load balancers/firewalls commonly perform forms of NAT.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-52">
+        <div class="section-number">52</div>
+        <div class="topic-body">
+            <h2>Routing</h2>
+            <h3 class="mini">Every network device needs to determine</h3>
+<p>Where should I send this packet?</p>
+<h3 class="mini">Example routing table</h3>
+<div class="chip-grid"><span class="chip">Destination       Gateway</span><span class="chip">10.10.0.0/16      internal</span><span class="chip">0.0.0.0/0         firewall</span></div>
+<h3 class="mini">The default route</h3>
+<p>0.0.0.0/0</p>
+<h3 class="mini">means</h3>
+<p>If no more specific route exists, send it here.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-53">
+        <div class="section-number">53</div>
+        <div class="topic-body">
+            <h2>VLANs</h2>
+            <p>Enterprise networks often separate traffic using VLANs.</p>
+<h3 class="mini">For example</h3>
+<pre class="diagram"><code>VLAN 10 → Management
+VLAN 20 → Web
+VLAN 30 → Application
+VLAN 40 → Database</code></pre>
+<p>This provides logical network separation.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-54">
+        <div class="section-number">54</div>
+        <div class="topic-body">
+            <h2>Security groups / cloud networking</h2>
+            <h3 class="mini">In AWS/Azure/GCP you may additionally have</h3>
+<div class="chip-grid"><span class="chip">VPC/VNet</span><span class="chip">↓</span><span class="chip">Subnet</span><span class="chip">↓</span><span class="chip">Security Group / NSG</span><span class="chip">↓</span><span class="chip">VM</span></div>
+<h3 class="mini">For example</h3>
+<div class="chip-grid"><span class="chip">Internet</span><span class="chip">↓</span><span class="chip">Azure Application Gateway/WAF</span><span class="chip">↓</span><span class="chip">NSG</span><span class="chip">↓</span><span class="chip">VM</span></div>
+<p>Cloud networking adds another layer to understand.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-55">
+        <div class="section-number">55</div>
+        <div class="topic-body">
+            <h2>Authentication infrastructure</h2>
+            <h3 class="mini">Enterprise applications often integrate with</h3>
+<div class="chip-grid"><span class="chip">Active Directory</span><span class="chip">LDAP</span><span class="chip">Azure AD / Entra ID</span><span class="chip">Okta</span><span class="chip">Ping Identity</span><span class="chip">Keycloak</span></div>
+<h3 class="mini">A login request could therefore travel</h3>
+<div class="chip-grid"><span class="chip">Browser</span><span class="chip">↓</span><span class="chip">WAF</span><span class="chip">↓</span><span class="chip">Application</span><span class="chip">↓</span><span class="chip">Identity Provider</span><span class="chip">↓</span><span class="chip">Active Directory</span></div>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-56">
+        <div class="section-number">56</div>
+        <div class="topic-body">
+            <h2>Certificates and PKI</h2>
+            <h3 class="mini">You should understand</h3>
+<div class="chip-grid"><span class="chip">Private key</span><span class="chip">Public key</span><span class="chip">Certificate</span><span class="chip">CA</span><span class="chip">Certificate chain</span><span class="chip">CSR</span><span class="chip">OCSP</span><span class="chip">CRL</span></div>
+<h3 class="mini">For example</h3>
+<div class="chip-grid"><span class="chip">example.com certificate</span><span class="chip">↓</span><span class="chip">Intermediate CA</span><span class="chip">↓</span><span class="chip">Root CA</span></div>
+<p>This is critical for WAF/ADC work because you'll frequently deal with certificate installation and TLS troubleshooting.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-57">
+        <div class="section-number">57</div>
+        <div class="topic-body">
+            <h2>Logging</h2>
+            <p>Every layer generates logs.</p>
+<div class="chip-grid"><span class="chip">Firewall</span><span class="chip">src=1.2.3.4</span><span class="chip">dst=10.10.10.10</span><span class="chip">port=443</span><span class="chip">action=allow</span><span class="chip">WAF</span><span class="chip">client=1.2.3.4</span><span class="chip">url=/login</span><span class="chip">attack=SQL Injection</span><span class="chip">action=blocked</span><span class="chip">Load Balancer</span><span class="chip">VIP=10.10.10.10</span><span class="chip">pool_member=10.20.20.5</span><span class="chip">status=200</span><span class="chip">NGINX</span><span class="chip">GET /login</span><span class="chip">200</span><span class="chip">Application</span><span class="chip">User login successful</span><span class="chip">Database</span></div>
+<p>May record queries, errors, authentication events, etc.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-58">
+        <div class="section-number">58</div>
+        <div class="topic-body">
+            <h2>SIEM</h2>
+            <h3 class="mini">All these logs can eventually flow into</h3>
+<div class="chip-grid"><span class="chip">Firewall</span><span class="chip">↓</span><span class="chip">WAF</span><span class="chip">↓</span><span class="chip">Server</span><span class="chip">↓</span><span class="chip">Application</span><span class="chip">↓</span><span class="chip">SIEM</span></div>
+<h3 class="mini">Examples</h3>
+<div class="chip-grid"><span class="chip">Splunk</span><span class="chip">Microsoft Sentinel</span><span class="chip">QRadar</span><span class="chip">Elastic</span></div>
+<p>The SOC can correlate events.</p>
+<h3 class="mini">For example</h3>
+<div class="chip-grid"><span class="chip">1000 requests</span><span class="chip">↓</span><span class="chip">Same IP</span><span class="chip">↓</span><span class="chip">WAF SQLi blocks</span><span class="chip">↓</span><span class="chip">Firewall events</span><span class="chip">↓</span><span class="chip">SIEM correlation</span><span class="chip">↓</span><span class="chip">SOC alert</span></div>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-59">
+        <div class="section-number">59</div>
+        <div class="topic-body">
+            <h2>Monitoring</h2>
+            <p>Separate from security logs, infrastructure monitoring watches health.</p>
+<h3 class="mini">Examples</h3>
+<div class="chip-grid"><span class="chip">CPU</span><span class="chip">Memory</span><span class="chip">Disk</span><span class="chip">Network</span><span class="chip">Latency</span><span class="chip">Connections</span><span class="chip">Errors</span><span class="chip">Throughput</span></div>
+<h3 class="mini">Tools include</h3>
+<div class="chip-grid"><span class="chip">Prometheus</span><span class="chip">Grafana</span><span class="chip">Datadog</span><span class="chip">New Relic</span><span class="chip">Dynatrace</span><span class="chip">Zabbix</span></div>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-60">
+        <div class="section-number">60</div>
+        <div class="topic-body">
+            <h2>What happens when something fails?</h2>
+            <p>This is where your understanding becomes really valuable as a WAF engineer.</p>
+<h3 class="mini">Suppose</h3>
+<h3 class="mini">User says</h3>
+<p>"Website is down."</p>
+<p>Don't immediately assume WAF.</p>
+<h3 class="mini">Trace the path</h3>
+<div class="chip-grid"><span class="chip">DNS</span><span class="chip">↓</span><span class="chip">Internet</span><span class="chip">↓</span><span class="chip">Firewall</span><span class="chip">↓</span><span class="chip">VIP</span><span class="chip">↓</span><span class="chip">WAF</span><span class="chip">↓</span><span class="chip">Load Balancer</span><span class="chip">↓</span><span class="chip">Pool</span><span class="chip">↓</span><span class="chip">Web Server</span><span class="chip">↓</span><span class="chip">Application</span><span class="chip">↓</span><span class="chip">Database</span></div>
+<h3 class="mini">At every stage ask</h3>
+<p>Is the request reaching this layer?</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-61">
+        <div class="section-number">61</div>
+        <div class="topic-body">
+            <h2>Example troubleshooting</h2>
+            <h3 class="mini">User receives</h3>
+<p>Connection timed out</p>
+<h3 class="mini">Possible causes</h3>
+<div class="chip-grid"><span class="chip">DNS issue</span><span class="chip">Routing issue</span><span class="chip">Firewall drop</span><span class="chip">Security group</span><span class="chip">Load balancer</span><span class="chip">WAF</span><span class="chip">Backend unavailable</span></div>
+<h3 class="mini">But if they receive</h3>
+<p>HTTP 403</p>
+<p>then the request probably reached an HTTP-aware component.</p>
+<h3 class="mini">Potentially</h3>
+<div class="chip-grid"><span class="chip">WAF</span><span class="chip">Application</span><span class="chip">Authentication layer</span></div>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-62">
+        <div class="section-number">62</div>
+        <div class="topic-body">
+            <h2>403 vs 404 vs 500 vs 502 vs 503</h2>
+            <p>Know these extremely well.</p>
+<div class="chip-grid"><span class="chip">200</span><span class="chip">Success</span><span class="chip">301/302</span><span class="chip">Redirect</span><span class="chip">400</span><span class="chip">Bad request</span><span class="chip">401</span><span class="chip">Authentication required/failed</span><span class="chip">403</span><span class="chip">Forbidden</span></div>
+<p>Could be WAF or application.</p>
+<div class="chip-grid"><span class="chip">404</span><span class="chip">Resource not found</span><span class="chip">429</span><span class="chip">Too many requests</span><span class="chip">500</span><span class="chip">Application/server error</span><span class="chip">502</span><span class="chip">Bad gateway</span></div>
+<p>Often proxy/LB cannot get a valid backend response.</p>
+<p>503 Service unavailable</p>
+<p>Backend/pool/service may be unavailable.</p>
+<p>504 Gateway timeout</p>
+<p>Proxy/LB waited too long for upstream.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-63">
+        <div class="section-number">63</div>
+        <div class="topic-body">
+            <h2>WAF troubleshooting example</h2>
+            <h3 class="mini">Suppose customer says</h3>
+<pre class="diagram"><code>POST request is getting blocked.</code></pre>
+<h3 class="mini">You should investigate</h3>
+<div class="chip-grid"><span class="chip">Client IP</span><span class="chip">↓</span><span class="chip">URL</span><span class="chip">↓</span><span class="chip">HTTP method</span><span class="chip">↓</span><span class="chip">Host</span><span class="chip">↓</span><span class="chip">Headers</span><span class="chip">↓</span><span class="chip">Parameters</span><span class="chip">↓</span><span class="chip">Request body</span><span class="chip">↓</span><span class="chip">WAF policy</span><span class="chip">↓</span><span class="chip">Signature/rule</span><span class="chip">↓</span><span class="chip">Action</span></div>
+<h3 class="mini">For example</h3>
+<p>POST /login</p>
+<div class="kv-grid"><div class="kv"><span>username</span><b>admin</b></div><div class="kv"><span>password</span><b>' OR 1=1 --</b></div></div>
+<h3 class="mini">WAF may detect</h3>
+<p>SQL Injection</p>
+<h3 class="mini">and return</h3>
+<p>403</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-64">
+        <div class="section-number">64</div>
+        <div class="topic-body">
+            <h2>But what if WAF allows it?</h2>
+            <h3 class="mini">Then trace</h3>
+<pre class="diagram"><code>WAF → LB</code></pre>
+<h3 class="mini">Check</h3>
+<div class="chip-grid"><span class="chip">Pool</span><span class="chip">Health monitor</span><span class="chip">Routing</span><span class="chip">SNAT</span><span class="chip">Backend connection</span></div>
+<h3 class="mini">Then</h3>
+<pre class="diagram"><code>LB → Web Server</code></pre>
+<h3 class="mini">Then</h3>
+<pre class="diagram"><code>Web Server → Application</code></pre>
+<h3 class="mini">Then</h3>
+<pre class="diagram"><code>Application → Database</code></pre>
+<p>This is why understanding the entire stack makes you much stronger at WAF troubleshooting.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-65">
+        <div class="section-number">65</div>
+        <div class="topic-body">
+            <h2>OSI model you should know</h2>
+            <p>For your career, memorize this conceptually.</p>
+<pre class="diagram"><code>Layer 7 → Application
+          HTTP, HTTPS, DNS</code></pre>
+<pre class="diagram"><code>Layer 6 → Presentation
+          TLS, encoding</code></pre>
+<pre class="diagram"><code>Layer 5 → Session</code></pre>
+<pre class="diagram"><code>Layer 4 → Transport
+          TCP, UDP</code></pre>
+<pre class="diagram"><code>Layer 3 → Network
+          IP, routing</code></pre>
+<pre class="diagram"><code>Layer 2 → Data Link
+          Ethernet, MAC, VLAN</code></pre>
+<pre class="diagram"><code>Layer 1 → Physical
+          Cable, fiber, radio</code></pre>
+<h3 class="mini">WAF primarily operates around</h3>
+<p>Layer 7</p>
+<p>Firewalls can operate across multiple layers depending on capability.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-66">
+        <div class="section-number">66</div>
+        <div class="topic-body">
+            <h2>TCP/IP model</h2>
+            <h3 class="mini">In practical troubleshooting, you'll often use</h3>
+<div class="chip-grid"><span class="chip">Application</span><span class="chip">↓</span><span class="chip">Transport</span><span class="chip">↓</span><span class="chip">Internet</span><span class="chip">↓</span><span class="chip">Network Access</span></div>
+<h3 class="mini">For web security</h3>
+<div class="chip-grid"><span class="chip">HTTP</span><span class="chip">↓</span><span class="chip">TLS</span><span class="chip">↓</span><span class="chip">TCP</span><span class="chip">↓</span><span class="chip">IP</span><span class="chip">↓</span><span class="chip">Ethernet</span></div>
+<p>That's a very useful mental model.</p>
+        </div>
+    </section>
+    
+    <section class="topic-card" id="section-67">
+        <div class="section-number">67</div>
+        <div class="topic-body">
+            <h2>The entire journey in one example</h2>
+            <p>Let's put everything together.</p>
+<h3 class="mini">User enters</h3>
+<p>https://bank.example.com/login Step 1</p>
+<p>Browser checks its DNS cache.</p>
+<p>Step 2</p>
+<h3 class="mini">DNS resolves</h3>
+<div class="chip-grid"><span class="chip">bank.example.com</span><span class="chip">→ 203.0.113.50</span><span class="chip">Step 3</span></div>
+<h3 class="mini">Client establishes TCP</h3>
+<pre class="diagram"><code>Client → SYN
+Server → SYN-ACK
+Client → ACK
+Step 4</code></pre>
+<p>TLS handshake occurs.</p>
+<p>Step 5</p>
+<p>Browser verifies the certificate.</p>
+<p>Step 6</p>
+<h3 class="mini">Browser sends</h3>
+<pre class="diagram"><code>POST /login HTTP/1.1
+Host: bank.example.com
+Content-Type: application/json</code></pre>
+<p>{"username":"user","password":"xxxxx"} Step 7</p>
+<p>Internet routers forward packets. Yes. In fact, hands-on is the best way for you to learn this, especially because you're already working in WAF. You can build a small enterprise-style lab on your Windows 11 laptop and reproduce almost the entire request path yourself.</p>
+<p>I’d recommend building it progressively rather than trying to install everything at once.</p>
+<div class="chip-grid"><span class="chip">Your lab will eventually look like this</span><span class="chip">YOUR LAPTOP</span><span class="chip">│</span><span class="chip">┌────────┴────────┐</span><span class="chip">│                 │</span><span class="chip">Windows 11        Linux VMs</span><span class="chip">│                 │</span><span class="chip">│          ┌──────┴──────────┐</span><span class="chip">│          │                 │</span><span class="chip">Browser      Firewall        Web/App</span><span class="chip">│        pfSense/OPNsense   Server</span><span class="chip">│          │                 │</span><span class="chip">└──────────┼─────────────────┤</span><span class="chip">│</span><span class="chip">NGINX</span><span class="chip">│</span><span class="chip">WAF simulation</span><span class="chip">│</span><span class="chip">Web Application</span><span class="chip">│</span><span class="chip">Database</span></div>
+<h3 class="mini">Then you can progressively add</h3>
+<div class="chip-grid"><span class="chip">DNS</span><span class="chip">↓</span><span class="chip">Firewall</span><span class="chip">↓</span><span class="chip">Reverse Proxy / Load Balancer</span><span class="chip">↓</span><span class="chip">WAF</span><span class="chip">↓</span><span class="chip">NGINX</span><span class="chip">↓</span><span class="chip">Application</span><span class="chip">↓</span><span class="chip">Database</span><span class="chip">↓</span><span class="chip">SIEM / Monitoring</span></div>
+<pre class="diagram"><code>        ← Back to Blog</code></pre>
+        </div>
+    </section>
+    
+
+        <div class="note-card">
+            <h2>🚀 Keep Learning by Building</h2>
+            <p>
+                These notes are now arranged so you can read them layer-by-layer:
+                client → DNS → network → firewall → load balancer → WAF →
+                web/application → database → response → troubleshooting.
+            </p>
+            <a class="top-link" href="#top" onclick="window.scrollTo({top:0,behavior:'smooth'}); return false;">↑ Back to top</a>
+        </div>
+    </main>
+</div>
+
+<footer class="footer">
+    <div>© 2026 Parthiban S | Cyber Security</div>
+    <a class="top-link" href="index.html">← Back to Blog</a>
+</footer>
+
+<script>
+const progress = document.getElementById("progress");
+window.addEventListener("scroll", () => {
+    const h = document.documentElement;
+    const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    progress.style.width = pct + "%";
+});
+
+const search = document.getElementById("search");
+const tocLinks = [...document.querySelectorAll("#toc a")];
+const cards = [...document.querySelectorAll(".topic-card")];
+
+search.addEventListener("input", () => {
+    const q = search.value.toLowerCase().trim();
+    tocLinks.forEach(link => {
+        link.style.display = link.textContent.toLowerCase().includes(q) ? "" : "none";
+    });
+    cards.forEach(card => {
+        card.style.display = card.textContent.toLowerCase().includes(q) ? "" : "none";
+    });
+});
+</script>
+</body>
+</html>
